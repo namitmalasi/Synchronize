@@ -3,6 +3,8 @@ import "./Create.css";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { useCollection } from "../../hooks/useCollection";
+import { timestamp } from "../../firebase/config";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 const categories = [
   { value: "development", label: "Development" },
@@ -19,6 +21,8 @@ function Create() {
   const [assignedUsers, setAssignedUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [formError, setFormError] = useState(null);
+
+  const { user } = useAuthContext();
 
   const { documents } = useCollection("users");
 
@@ -45,7 +49,31 @@ function Create() {
       setFormError("Please assign the project to atleast 1 user");
       return;
     }
-    console.log(name, details, dueDate, category.value, assignedUsers);
+
+    const createdBy = {
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      id: user.uid,
+    };
+
+    const assignedUsersList = assignedUsers.map((u) => {
+      return {
+        displayName: u.value.displayName,
+        photoURL: u.value.photoURL,
+        id: u.value.id,
+      };
+    });
+
+    const project = {
+      name,
+      details,
+      category: category.value,
+      dueDate: timestamp.fromDate(new Date(dueDate)),
+      comments: [],
+      createdBy,
+      assignedUsersList,
+    };
+    console.log(project);
   };
   return (
     <div className="create-form">
