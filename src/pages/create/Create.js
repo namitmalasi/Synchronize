@@ -5,6 +5,8 @@ import Select from "react-select";
 import { useCollection } from "../../hooks/useCollection";
 import { timestamp } from "../../firebase/config";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import { useFirestore } from "../../hooks/useFirestore";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
   { value: "development", label: "Development" },
@@ -24,7 +26,11 @@ function Create() {
 
   const { user } = useAuthContext();
 
+  const { addDocument, response } = useFirestore("projects");
+
   const { documents } = useCollection("users");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (documents) {
@@ -36,7 +42,7 @@ function Create() {
     }
   }, [documents]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
 
@@ -73,7 +79,12 @@ function Create() {
       createdBy,
       assignedUsersList,
     };
-    console.log(project);
+
+    await addDocument(project);
+
+    if (!response.error) {
+      navigate("/");
+    }
   };
   return (
     <div className="create-form">
