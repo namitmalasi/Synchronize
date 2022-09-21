@@ -11,7 +11,7 @@ function ProjectSummary({ project }) {
         </p>
         <p className="details">{project.details}</p>
 
-        <h4>Porject is assigned to:</h4>
+        <h4>Project is assigned to:</h4>
         {project.assignedUsersList.map((user) => (
           <div key={user.id}>
             <Avatar src={user.photoURL} />
